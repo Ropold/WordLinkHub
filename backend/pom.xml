@@ -11,7 +11,7 @@
     <groupId>ropold</groupId>
     <artifactId>backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>backend</name>
+    <name>ropold_WordLinkHub-backend</name>
     <description>backend</description>
     <url/>
     <licenses>
