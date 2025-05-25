@@ -74,4 +74,28 @@ public class QuestionService {
         }
         questionRepository.deleteById(id);
     }
+
+    public List<QuestionModel> getQuestionsForGithubUser(String githubId) {
+        return questionRepository.findAll().stream()
+                .filter(questionModel -> questionModel.githubId().equals(githubId))
+                .toList();
+    }
+
+    public QuestionModel toggleQuestionActive(String id) {
+        QuestionModel questionModel = questionRepository.findById(id)
+                .orElseThrow(() -> new QuestionNotFoundException("No Question found with id: " + id));
+
+        QuestionModel updatedQuestionModel = new QuestionModel(
+                questionModel.id(),
+                questionModel.title(),
+                questionModel.categoryEnum(),
+                questionModel.clueWords(),
+                questionModel.solutionWord(),
+                questionModel.answerExplanation(),
+                !questionModel.isActive(),
+                questionModel.githubId(),
+                questionModel.imageUrl()
+        );
+        return questionRepository.save(updatedQuestionModel);
+    }
 }
