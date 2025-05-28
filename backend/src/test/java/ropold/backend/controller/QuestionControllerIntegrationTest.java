@@ -1,21 +1,35 @@
 package ropold.backend.controller;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ropold.backend.model.AppUser;
 import ropold.backend.model.CategoryEnum;
 import ropold.backend.model.QuestionModel;
 import ropold.backend.repository.AppUserRepository;
 import ropold.backend.repository.QuestionRepository;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -63,7 +77,7 @@ class QuestionControllerIntegrationTest {
                 List.of("Hogwarts", "Zauberstab", "Narbe", "Brille"),
                 "Harry Potter",
                 "Alle Begriffe beziehen sich auf den berühmten Zauberschüler aus der gleichnamigen Buchreihe.",
-                true,
+                false,
                 "user",
                 "https://example.com/harrypotter.jpg"
         );
@@ -88,6 +102,74 @@ class QuestionControllerIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].title", is("Pyramidenland")))
                 .andExpect(jsonPath("$[1].title", is("Zauberschüler")));
+    }
+
+    @Test
+    void getActiveQuestions() throws Exception {
+        mockMvc.perform(get("/api/word-link-hub/active"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title", is("Pyramidenland")));
+    }
+
+    @Test
+    void getQuestionById() throws Exception {
+        mockMvc.perform(get("/api/word-link-hub/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", is("Pyramidenland")))
+                .andExpect(jsonPath("$.categoryEnum", is("GEOGRAPHY")));
+    }
+
+    @Test
+    void postQuestion_shouldReturnCreatedQuestion() throws Exception {
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
+        questionRepository.deleteAll();
+
+        Uploader mockUploader = mock(Uploader.class);
+        when(mockUploader.upload(any(), anyMap())).thenReturn(Map.of("secure_url", "https://www.test.de/"));
+        when(cloudinary.uploader()).thenReturn(mockUploader);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/word-link-hub")
+                        .file(new MockMultipartFile("image", "image.jpg", "image/jpeg", "image".getBytes()))
+                        .file(new MockMultipartFile("questionModelDto", "", "application/json", """
+                {
+                    "title": "Berühmter Apfel",
+                    "categoryEnum": "SCIENCE",
+                    "clueWords": ["Gravitation", "Newton", "Fall", "Baum"],
+                    "solutionWord": "Apfel",
+                    "answerExplanation": "Die Hinweise beziehen sich auf die Anekdote, wie Isaac Newton durch einen fallenden Apfel zur Gravitationstheorie inspiriert wurde.",
+                    "isActive": true,
+                    "githubId": "user",
+                    "imageUrl": "https://example.com/newton.jpg"
+                }
+                """.getBytes())))
+                .andExpect(status().isCreated());
+
+        List<QuestionModel> allQuestions = questionRepository.findAll();
+        Assertions.assertEquals(1, allQuestions.size());
+
+        QuestionModel savedQuestion = allQuestions.getFirst();
+        org.assertj.core.api.Assertions.assertThat(savedQuestion)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "imageUrl")
+                .isEqualTo(new QuestionModel(
+                        null,
+                        "Berühmter Apfel",
+                        CategoryEnum.SCIENCE,
+                        List.of("Gravitation", "Newton", "Fall", "Baum"),
+                        "Apfel",
+                        "Die Hinweise beziehen sich auf die Anekdote, wie Isaac Newton durch einen fallenden Apfel zur Gravitationstheorie inspiriert wurde.",
+                        true,
+                        "user",
+                        null
+                ));
     }
 
 }
