@@ -2,6 +2,7 @@ package ropold.backend.controller;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -170,6 +171,203 @@ class QuestionControllerIntegrationTest {
                         "user",
                         null
                 ));
+    }
+
+    @Test
+    void postQuestionWithoutLogin_shouldReturnCreatedQuestion() throws Exception {
+        questionRepository.deleteAll();
+
+        String json =     """  
+                {
+                    "title": "Berühmter Apfel",
+                    "categoryEnum": "SCIENCE",
+                    "clueWords": ["Gravitation", "Newton", "Fall", "Baum"],
+                    "solutionWord": "Apfel",
+                    "answerExplanation": "Die Hinweise beziehen sich auf die Anekdote, wie Isaac Newton durch einen fallenden Apfel zur Gravitationstheorie inspiriert wurde.",
+                    "isActive": true,
+                    "githubId": "anonymous"
+                }
+                """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/word-link-hub/no-login")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.title", is("Berühmter Apfel")))
+                .andExpect(jsonPath("$.categoryEnum", is("SCIENCE")))
+                .andExpect(jsonPath("$.clueWords", hasSize(4)))
+                .andExpect(jsonPath("$.clueWords[0]", is("Gravitation")))
+                .andExpect(jsonPath("$.solutionWord", is("Apfel")))
+                .andExpect(jsonPath("$.answerExplanation", is("Die Hinweise beziehen sich auf die Anekdote, wie Isaac Newton durch einen fallenden Apfel zur Gravitationstheorie inspiriert wurde.")))
+                .andExpect(jsonPath("$.githubId").value("anonymous"))
+                .andExpect(jsonPath("$.imageUrl").doesNotExist());
+
+        List<QuestionModel> allQuestions = questionRepository.findAll();
+        Assertions.assertEquals(1, allQuestions.size());
+
+        QuestionModel savedQuestion = allQuestions.getFirst();
+        org.assertj.core.api.Assertions.assertThat(savedQuestion)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "imageUrl")
+                .isEqualTo(new QuestionModel(
+                        null,
+                        "Berühmter Apfel",
+                        CategoryEnum.SCIENCE,
+                        List.of("Gravitation", "Newton", "Fall", "Baum"),
+                        "Apfel",
+                        "Die Hinweise beziehen sich auf die Anekdote, wie Isaac Newton durch einen fallenden Apfel zur Gravitationstheorie inspiriert wurde.",
+                        true,
+                        "anonymous",
+                        null
+                ));
+
+    }
+
+    @Test
+    void updateWithPut_shouldReturnUpdatedQuestion() throws Exception {
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
+        Uploader mockUploader = mock(Uploader.class);
+        when(mockUploader.upload(any(), anyMap())).thenReturn(Map.of("secure_url", "https://example.com/updated-image.jpg"));
+        when(cloudinary.uploader()).thenReturn(mockUploader);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/word-link-hub/1")
+                        .file(new MockMultipartFile("image", "image.jpg", "image/jpeg", "image".getBytes()))
+                        .file(new MockMultipartFile("questionModelDto", "", "application/json", """
+                                {
+                                    "title": "Aktualisierter Titel",
+                                    "categoryEnum": "GEOGRAPHY",
+                                    "clueWords": ["Wüste", "Kamel", "Nil", "Pharao"],
+                                    "solutionWord": "Ägypten",
+                                    "answerExplanation": "Aktualisierte Antworterklärung.",
+                                    "isActive": true,
+                                    "githubId": "user",
+                                    "imageUrl": null
+                                }
+                                """.getBytes()))
+                        .contentType("multipart/form-data")
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        }))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", is("Aktualisierter Titel")))
+                .andExpect(jsonPath("$.categoryEnum", is("GEOGRAPHY")))
+                .andExpect(jsonPath("$.clueWords", hasSize(4)))
+                .andExpect(jsonPath("$.clueWords[0]", is("Wüste")))
+                .andExpect(jsonPath("$.solutionWord", is("Ägypten")))
+                .andExpect(jsonPath("$.answerExplanation", is("Aktualisierte Antworterklärung.")))
+                .andExpect(jsonPath("$.githubId", is("user")))
+                .andExpect(jsonPath("$.imageUrl", is("https://example.com/updated-image.jpg")));
+
+        QuestionModel updatedQuestion = questionRepository.findById("1").orElseThrow();
+        Assertions.assertEquals("Aktualisierter Titel", updatedQuestion.title());
+    }
+
+    @Test
+    void deleteQuestion_shouldReturnNoContent() throws Exception {
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
+        Uploader mockUploader = mock(Uploader.class);
+        when(mockUploader.upload(any(), anyMap())).thenReturn(Map.of("secure_url", "https://example.com/updated-image.jpg"));
+        when(cloudinary.uploader()).thenReturn(mockUploader);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/word-link-hub/1"))
+                .andExpect(status().isNoContent());
+
+        Assertions.assertFalse(questionRepository.existsById("1"));
+    }
+
+    @Test
+    void updateQuestion_withoutImage_shouldSetImageUrlNull() throws Exception {
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
+        Uploader mockUploader = mock(Uploader.class);
+        when(mockUploader.upload(any(), anyMap())).thenReturn(Map.of("secure_url", "https://example.com/updated-image.jpg"));
+        when(cloudinary.uploader()).thenReturn(mockUploader);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/word-link-hub/1")
+                        .file(new MockMultipartFile("questionModelDto", "", "application/json", """
+                                {
+                                    "title": "Aktualisierter Titel",
+                                    "categoryEnum": "GEOGRAPHY",
+                                    "clueWords": ["Wüste", "Kamel", "Nil", "Pharao"],
+                                    "solutionWord": "Ägypten",
+                                    "answerExplanation": "Aktualisierte Antworterklärung.",
+                                    "isActive": true,
+                                    "githubId": "user",
+                                    "imageUrl": null
+                                }
+                                """.getBytes()))
+                        .contentType("multipart/form-data")
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        }))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.imageUrl").value(Matchers.nullValue()));
+
+        QuestionModel updated = questionRepository.findById("1").orElseThrow();
+        Assertions.assertNull(updated.imageUrl());
+    }
+
+    @Test
+    void updateQuestion_withExistingImageUrl_shouldKeepOldImageUrl() throws Exception {
+        OAuth2User mockOAuth2User = mock(OAuth2User.class);
+        when(mockOAuth2User.getName()).thenReturn("user");
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockOAuth2User, null,
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
+        Uploader mockUploader = mock(Uploader.class);
+        when(mockUploader.upload(any(), anyMap())).thenReturn(Map.of("secure_url", "https://example.com/image.jpg"));
+        when(cloudinary.uploader()).thenReturn(mockUploader);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/word-link-hub/1")
+                // Kein 'image' File, um den else-Zweig zu triggern
+                .file(new MockMultipartFile("questionModelDto", "", "application/json", """
+                    {
+                        "title": "Aktualisierter Titel",
+                        "categoryEnum": "GEOGRAPHY",
+                        "clueWords": ["Wüste", "Kamel", "Nil", "Pharao"],
+                        "solutionWord": "Ägypten",
+                        "answerExplanation": "Aktualisierte Antworterklärung.",
+                        "isActive": true,
+                        "githubId": "user",
+                        "imageUrl": "https://example.com/old-image.jpg"
+                    }
+                    """.getBytes()))
+                .contentType("multipart/form-data")
+                .with(request -> {
+                    request.setMethod("PUT");
+                    return request;
+                }))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.imageUrl").value("https://example.com/egypt.jpg"))
+                .andExpect(jsonPath("$.title", is("Aktualisierter Titel")));
+
+        QuestionModel updated = questionRepository.findById("1").orElseThrow();
+        Assertions.assertEquals("https://example.com/egypt.jpg", updated.imageUrl());
     }
 
 }
