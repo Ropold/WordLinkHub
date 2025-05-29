@@ -7,10 +7,11 @@ import ropold.backend.model.QuestionModel;
 import ropold.backend.repository.QuestionRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 class QuestionServiceTest {
 
@@ -82,4 +83,102 @@ class QuestionServiceTest {
         assertEquals(questionModels, result);
     }
 
+    @Test
+    void testAddQuestion() {
+        QuestionModel questionModel3 = new QuestionModel(
+                "3",
+                "Testfrage",
+                CategoryEnum.ART,
+                List.of("Antwort1", "Antwort2", "Antwort3", "Antwort4"),
+                "Richtige Antwort",
+                "Erklärung zur richtigen Antwort",
+                true,
+                "user",
+                null
+        );
+        when(idService.generateRandomId()).thenReturn("3");
+        when(questionRepository.save(questionModel3)).thenReturn(questionModel3);
+
+        QuestionModel expected = questionService.addQuestion(questionModel3);
+
+        assertEquals(questionModel3, expected);
+        verify(idService, times(1)).generateRandomId();
+        verify(questionRepository, times(1)).save(questionModel3);
+    }
+
+    @Test
+    void testUpdateQuestion(){
+        QuestionModel updatedQuestionModel = new QuestionModel(
+                "1",
+                "Aktualisierte Frage",
+                CategoryEnum.ART,
+                List.of("Aktualisierte Antwort1", "Aktualisierte Antwort2", "Aktualisierte Antwort3", "Aktualisierte Antwort4"),
+                "Aktualisierte Antwort",
+                "Aktualisierte Erklärung",
+                true,
+                "user",
+                "https://example.com/updated.jpg"
+        );
+
+        when(questionRepository.findById("1")).thenReturn(Optional.of(updatedQuestionModel));
+        when(questionRepository.save(updatedQuestionModel)).thenReturn(updatedQuestionModel);
+
+        QuestionModel result = questionService.updateQuestion(updatedQuestionModel);
+
+        assertEquals(updatedQuestionModel, result);
+
+        verify(questionRepository, times(1)).save(updatedQuestionModel);
+    }
+
+    @Test
+    void testDeleteQuestion() {
+        QuestionModel questionModel = questionModels.getFirst();
+        when(questionRepository.findById("1")).thenReturn(java.util.Optional.of(questionModel));
+        questionService.deleteQuestion("1");
+        verify(questionRepository, times(1)).deleteById("1");
+        verify(cloudinaryService, times(1)).deleteImage(questionModel.imageUrl());
+    }
+
+    @Test
+    void testGetQuestionsForGithubUser() {
+        String githubId = "user";
+        List<QuestionModel> expectedQuestions = questionModels.stream()
+                .filter(questionModel -> questionModel.githubId().equals(githubId))
+                .toList();
+
+        when(questionRepository.findAll()).thenReturn(questionModels);
+
+        List<QuestionModel> result = questionService.getQuestionsForGithubUser(githubId);
+
+        assertEquals(expectedQuestions, result);
+        verify(questionRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testToggleQuestionActive() {
+        QuestionModel questionModel = questionModels.getFirst();
+        when(questionRepository.findById("1")).thenReturn(Optional.of(questionModel));
+
+        QuestionModel updatedQuestionModel = new QuestionModel(
+                questionModel.id(),
+                questionModel.title(),
+                questionModel.categoryEnum(),
+                questionModel.clueWords(),
+                questionModel.solutionWord(),
+                questionModel.answerExplanation(),
+                !questionModel.isActive(),
+                questionModel.githubId(),
+                questionModel.imageUrl()
+        );
+
+        when(questionRepository.findById("1")).thenReturn(Optional.of(questionModel));
+        when(questionRepository.save(any(QuestionModel.class))).thenReturn(updatedQuestionModel);
+
+        QuestionModel expected = questionService.toggleQuestionActive("1");
+
+        //then
+        assertEquals(updatedQuestionModel, expected);
+        verify(questionRepository, times(1)).findById("1");
+        verify(questionRepository, times(1)).save(updatedQuestionModel);
+    }
 }
