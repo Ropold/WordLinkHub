@@ -17,7 +17,7 @@ public class CloudinaryService {
     private final Cloudinary cloudinary;
 
     public String uploadImage(MultipartFile image) throws IOException {
-        File fileToUpload = File.createTempFile("quiz-hub", "");
+        File fileToUpload = File.createTempFile("word-link-hub", "");
         image.transferTo(fileToUpload);
 
         @SuppressWarnings("unchecked")
