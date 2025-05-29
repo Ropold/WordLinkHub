@@ -151,7 +151,14 @@ public class HighScoreControllerIntegrationTest {
         boolean containsNewPlayer = all.stream()
                 .anyMatch(score -> "player11".equals(score.playerName()));
         Assertions.assertFalse(containsNewPlayer);
+    }
 
+    @Test
+    void deleteHighScore_shouldDeleteHighScore() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/high-score/1"))
+                .andExpect(status().isNoContent());
+        Assertions.assertEquals(1, highScoreRepository.count());
+        Assertions.assertTrue(highScoreRepository.existsById("2"));
     }
 
 }
