@@ -1,5 +1,6 @@
 package ropold.backend.controller;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ropold.backend.model.AppUser;
@@ -156,4 +158,74 @@ public class AppUserControllerTest {
                 .andExpect(jsonPath("$[1].githubId").value("user"));
         }
 
+    @Test
+    @WithMockUser(username = "user")
+    void getUserFavorites_shouldReturnUserFavorites() throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/api/users/favorites")
+                                .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+            [
+                {
+                    "id": "2",
+                    "title": "Zauberschüler",
+                    "categoryEnum": "FICTIONAL_CHARACTERS",
+                    "clueWords": [
+                        "Hogwarts",
+                        "Zauberstab",
+                        "Narbe",
+                        "Brille"
+                    ],
+                    "solutionWord": "Harry Potter",
+                    "answerExplanation": "Alle Begriffe beziehen sich auf den berühmten Zauberschüler aus der gleichnamigen Buchreihe.",
+                    "isActive": true,
+                    "githubId": "user",
+                    "imageUrl": "https://example.com/harrypotter.jpg"
+                }
+            ]
+        """));
+    }
+
+    @Test
+    void addQuestionToFavorites_shouldAddQuestionAndReturnFavorites() throws Exception {
+        AppUser userBefore = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertFalse(userBefore.favoriteQuestions().contains("1"));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/users/favorites/1")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user"))))
+                .andExpect(status().isCreated());
+
+        AppUser updatedUser = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertTrue(updatedUser.favoriteQuestions().contains("1"));
+    }
+
+    @Test
+    void removeQuestionFromFavorites_shouldRemoveQuestionAndReturnFavorites() throws Exception {
+        AppUser userBefore = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertTrue(userBefore.favoriteQuestions().contains("2"));
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/favorites/2")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
+                )
+                .andExpect(status().isNoContent()); // .isOk = 200, .isNoContent = 204
+
+        AppUser updatedUser = appUserRepository.findById("user").orElseThrow();
+        Assertions.assertFalse(updatedUser.favoriteQuestions().contains("2"));
+    }
+
+    @Test
+    void ToggleActiveStatus_shouldToggleActiveStatus() throws Exception {
+        QuestionModel memoryBefore = questionRepository.findById("1").orElseThrow();
+        Assertions.assertTrue(memoryBefore.isActive());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/users/1/toggle-active")
+                        .with(oidcLogin().idToken(i -> i.claim("sub", "user")))
+                )
+                .andExpect(status().isOk());
+
+        QuestionModel updatedMemory = questionRepository.findById("1").orElseThrow();
+        Assertions.assertFalse(updatedMemory.isActive());
+    }
 }
