@@ -129,4 +129,43 @@ class HighScoreServiceTest {
         verify(highScoreRepository, never()).save(any());
         verify(highScoreRepository, never()).deleteById(any());
     }
+
+    @Test
+    void addHighScore2_shouldAddHighScore_whenTimeIsBadButNoErrors(){
+        LocalDateTime fixedDate = LocalDateTime.of(2025, 3, 5, 12, 0, 0);
+
+        List<HighScoreModel> existingScores = List.of(
+                new HighScoreModel("1", "player1", "123456","ART",1,10.2, fixedDate),
+                new HighScoreModel("2", "player1", "123456","ART",1,10.5, fixedDate),
+                new HighScoreModel("3", "player1", "123456","ART",2,10.7, fixedDate),
+                new HighScoreModel("4", "player1", "123456","ART",1,11.0, fixedDate),
+                new HighScoreModel("5", "player1", "123456","ART",1,11.2, fixedDate),
+                new HighScoreModel("6", "player1", "123456","ART",1,11.5, fixedDate),
+                new HighScoreModel("7", "player1", "123456","ART",1,11.7, fixedDate),
+                new HighScoreModel("8", "player1", "123456","ART",1,12.0, fixedDate),
+                new HighScoreModel("9", "player1", "123456","ART",1,12.2, fixedDate),
+                new HighScoreModel("10", "player1", "123456","ART",1,12.5, fixedDate)
+        );
+
+        when(highScoreRepository.findAllByOrderByWrongAnswerCountAscScoreTimeAsc()).thenReturn(existingScores);
+
+        HighScoreModel newHighScore = new HighScoreModel(
+                null,
+                "player1",
+                "123456",
+                "ART",
+                0,
+                13.2,
+                fixedDate
+        );
+
+        when(highScoreRepository.save(any(HighScoreModel.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        HighScoreModel result = highScoreService.addHighScore(newHighScore);
+
+        assertNotNull(result);
+        verify(highScoreRepository).save(any());
+        verify(highScoreRepository, never()).deleteById(any());
+    }
 }
