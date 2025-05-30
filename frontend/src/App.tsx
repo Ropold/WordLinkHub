@@ -1,19 +1,48 @@
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import './App.css'
+import Navbar from "./components/Navbar.tsx";
+import Footer from "./components/Footer.tsx";
+import {Route, Routes} from "react-router-dom";
+import NotFound from "./components/NotFound.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
+import axios from "axios";
+import Welcome from "./components/Welcome.tsx";
+import Profile from "./components/Profile.tsx";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+    const [user, setUser] = useState<string>("anonymousUser");
+
+
+
+    function getUser() {
+        axios.get("/api/users/me")
+            .then((response) => {
+                setUser(response.data.toString());
+            })
+            .catch((error) => {
+                console.error(error);
+                setUser("anonymousUser");
+            });
+    }
+
+    useEffect(() => {
+        getUser();
+    }, []);
 
   return (
-    <>
-      <h1>Word Link Hub</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
-    </>
+      <>
+          <Navbar />
+          <Routes>
+              <Route path="*" element={<NotFound />} />
+              <Route path="/" element={<Welcome />} />
+
+              <Route element={<ProtectedRoute user={user} />}>
+                  <Route path="/profile/*" element={<Profile />} />
+              </Route>
+          </Routes>
+          <Footer />
+      </>
+
   )
 }
 
-export default App
