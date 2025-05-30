@@ -82,7 +82,7 @@ export default function Profile(props:Readonly<ProfileProps>){
                         )}
                     </>
                 )}
-                {activeTab === "add-question" && <AddQuestionCard />}
+                {activeTab === "add-question" && <AddQuestionCard user={props.user} handleNewQuestionSubmit={props.handleNewQuestionSubmit}/>}
                 {activeTab === "my-questions" && <MyQuestions />}
                 {activeTab === "favorites" && <Favorites user={props.user} favorites={props.favorites} toggleFavorite={props.toggleFavorite}/>}
             </div>
