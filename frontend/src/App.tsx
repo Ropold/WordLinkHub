@@ -6,14 +6,8 @@ import {Route, Routes} from "react-router-dom";
 import NotFound from "./components/NotFound.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import axios from "axios";
-
-function Welcome() {
-    return null;
-}
-
-function Profile() {
-    return null;
-}
+import Welcome from "./components/Welcome.tsx";
+import Profile from "./components/Profile.tsx";
 
 export default function App() {
     const [user, setUser] = useState<string>("anonymousUser");
