@@ -9,10 +9,22 @@ import axios from "axios";
 import Welcome from "./components/Welcome.tsx";
 import Profile from "./components/Profile.tsx";
 import type {UserDetails} from "./components/model/UserDetailsModel.ts";
+import type {QuestionModel} from "./components/model/QuestionModel.ts";
+import Play from "./components/Play.tsx";
+import Details from "./components/Details.tsx";
+import HighScore from "./components/HighScore.tsx";
+
+function ListOfAllQuestions() {
+    return null;
+}
 
 export default function App() {
     const [user, setUser] = useState<string>("anonymousUser");
     const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+    const [favorites, setFavorites] = useState<string[]>([]);
+
+    const [allActiveQuestions, setAllActiveQuestions] = useState<QuestionModel[]>([]);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
 
     function getUser() {
@@ -37,9 +49,45 @@ export default function App() {
             });
     }
 
+    function toggleFavorite(questionId: string) {
+        const isFavorite = favorites.includes(questionId);
+
+        if (isFavorite) {
+            axios.delete(`/api/users/favorites/${questionId}`)
+                .then(() => {
+                    setFavorites((prevFavorites) =>
+                        prevFavorites.filter((id) => id !== questionId)
+                    );
+                })
+                .catch((error) => console.error(error));
+        } else {
+            axios.post(`/api/users/favorites/${questionId}`)
+                .then(() => {
+                    setFavorites((prevFavorites) => [...prevFavorites, questionId]);
+                })
+                .catch((error) => console.error(error));
+        }
+    }
+
     useEffect(() => {
         getUser();
+        getAllActiveQuestions();
     }, []);
+
+    function getAllActiveQuestions(){
+        axios
+            .get("/api/word-link-hub/active")
+            .then((response) => {
+                setAllActiveQuestions(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching active animals: ", error);
+            });
+    }
+
+    function handleNewQuestionSubmit(newQuestion: QuestionModel) {
+        setAllActiveQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
+    }
 
   return (
       <>
@@ -47,9 +95,13 @@ export default function App() {
           <Routes>
               <Route path="*" element={<NotFound />} />
               <Route path="/" element={<Welcome />} />
+              <Route path="/play" element={<Play />} />
+              <Route path="/list-of-all-questions" element={<ListOfAllQuestions user={user} favorites={favorites} toggleFavorite={toggleFavorite} currentPage={currentPage} setCurrentPage={setCurrentPage} allActiveQuestions={allActiveQuestions} getAllActiveQuestions={getAllActiveQuestions}/>}/>
+              <Route path="/question/:id" element={<Details />}/>
+              <Route path="/high-score" element={<HighScore />}/>
 
               <Route element={<ProtectedRoute user={user} />}>
-                  <Route path="/profile/*" element={<Profile user={user} userDetails={userDetails} />} />
+                  <Route path="/profile/*" element={<Profile user={user} userDetails={userDetails} handleNewQuestionSubmit={handleNewQuestionSubmit} favorites={favorites} toggleFavorite={toggleFavorite}/>} />
               </Route>
           </Routes>
           <Footer />
