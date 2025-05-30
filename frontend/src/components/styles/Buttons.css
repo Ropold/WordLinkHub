@@ -1,0 +1,7 @@
+.button-group-button {
+    background-color: #66b3ff;
+}
+
+.button-group-button:hover {
+    background-color: #007bff;
+}
