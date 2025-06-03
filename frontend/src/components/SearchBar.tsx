@@ -23,12 +23,10 @@ export default function SearchBar(props: Readonly<SearchBarProps>) {
         activeQuestions
     } = props;
 
-    const categoryTypes = Array.from(
-        new Set(
-            activeQuestions
-                .map((question) => question.categoryEnum)
-        )
-    ).sort();
+    const categoryTypes: CategoryEnum[] = Array
+        .from(new Set(activeQuestions.map(q => q.categoryEnum)))
+        .sort((a, b) => a.localeCompare(b));
+
 
     const handleReset = () => {
         setSearchQuery("");
