@@ -32,7 +32,7 @@ export default function Profile(props:Readonly<ProfileProps>){
                 setUserQuestions(response.data);
             })
             .catch((error) => {
-                console.error("Error fetching all animals: ", error);
+                console.error("Error fetching user questions: ", error);
             });
     }
     useEffect(() => {
