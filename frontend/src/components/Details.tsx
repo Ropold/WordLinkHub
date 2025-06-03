@@ -5,6 +5,7 @@ import {DefaultUserDetails, type UserDetails} from "./model/UserDetailsModel.ts"
 import {useParams} from "react-router-dom";
 import type {CategoryEnum} from "./model/CategoryEnum.ts";
 import {categoryEnumImages} from "./utils/CategoryEnumImages.ts";
+import "./styles/Details.css"
 
 type DetailsProps = {
     user: string;
@@ -20,7 +21,7 @@ export default function Details(props: Readonly<DetailsProps>) {
     useEffect(() => {
         if (!id) return;
         axios
-            .get(`/api/quiz-hub/${id}`)
+            .get(`/api/word-link-hub/${id}`)
             .then((response) => setQuestions(response.data))
             .catch((error) => console.error("Error fetching Question details", error));
     }, [id]);

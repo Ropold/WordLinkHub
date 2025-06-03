@@ -1,16 +1,16 @@
 import type {QuestionData, QuestionModel} from "./model/QuestionModel.ts";
 import {useState} from "react";
-import type {NullableCategoryEnum} from "./model/CategoryEnum.ts";
+import {ALL_CATEGORIES, type NullableCategoryEnum} from "./model/CategoryEnum.ts";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import "./styles/AddQuestionCard.css"
+import {formatEnumDisplayName} from "./utils/formatEnumDisplayName.ts";
 
 type AddQuestionCardProps = {
     user: string;
     handleNewQuestionSubmit: (newQuestion: QuestionModel) => void;
 }
 
-class NullableDifficultyEnum {
-}
 
 export default function AddQuestionCard(props:Readonly<AddQuestionCardProps>){
     const [title, setTitle] = useState<string>("");
@@ -49,7 +49,7 @@ export default function AddQuestionCard(props:Readonly<AddQuestionCardProps>){
         data.append("questionModelDto", new Blob([JSON.stringify(questionData)], { type: "application/json" }));
 
         axios
-            .post("/api/quiz-hub", data, {
+            .post("/api/word-link-hub", data, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -87,6 +87,101 @@ export default function AddQuestionCard(props:Readonly<AddQuestionCardProps>){
     }
 
     return (
-        <h2>AddQuestionCard</h2>
+        <div className="edit-form">
+            <form onSubmit={handleSubmit}>
+                <label>
+                    Title:
+                    <input
+                        className="input-small"
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
+                </label>
+
+                <label className="add-question-label">
+                    Category:
+                    <select
+                        className="input-small"
+                        value={categoryEnum}
+                        onChange={(e) => setCategoryEnum(e.target.value as NullableCategoryEnum)}
+                    >
+                        <option value="">Please select a category</option>
+                        {ALL_CATEGORIES.map((category) => (
+                            <option key={category} value={category}>
+                                {formatEnumDisplayName(category)}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <label>
+                    Clue Words (one per line):
+                    <textarea
+                        className="textarea-large"
+                        value={clueWords.join("\n")}
+                        onChange={(e) => setClueWords(e.target.value.split("\n"))}
+                    />
+                </label>
+
+                <label>
+                    Solution Word:
+                    <input
+                        className="input-small"
+                        type="text"
+                        value={solutionWord}
+                        onChange={(e) => setSolutionWord(e.target.value)}
+                    />
+                </label>
+
+                <label>
+                    Answer Explanation:
+                    <textarea
+                        className="textarea-large"
+                        value={answerExplanation}
+                        onChange={(e) => setAnswerExplanation(e.target.value)}
+                    />
+                </label>
+
+                <label>
+                    Image:
+                    <input
+                        type="file"
+                        onChange={onFileChange}
+                    />
+                </label>
+
+                {image && (
+                    <img
+                        src={URL.createObjectURL(image)}
+                        className="add-question-card-image"
+                        alt="Preview"
+                    />
+                )}
+
+                <div className="space-between">
+                    <button className="button-group-button margin-top-20" type="submit">
+                        Add Question Card
+                    </button>
+                </div>
+            </form>
+
+            {showPopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h3>Validation Errors</h3>
+                        <ul>
+                            {errorMessages.map((msg, index) => (
+                                <li key={index}>{msg}</li>
+                            ))}
+                        </ul>
+                        <div className="popup-actions">
+                            <button className="popup-cancel" onClick={handleClosePopup}>Close</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     )
+
 }

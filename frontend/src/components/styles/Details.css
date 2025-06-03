@@ -1,0 +1,47 @@
+.details-container {
+    padding: 1rem;
+}
+
+.details-image {
+    max-width: 300px;
+    max-height: 200px;
+    margin-top: 1rem;
+}
+
+.details-option-correct {
+    color: green;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    font-style: italic;
+}
+
+.details-options {
+    text-align: center; /* Text mittig */
+}
+
+.details-options ul {
+    list-style: none;
+    padding-left: 0;
+    display: inline-block; /* damit die ul nur so breit wie nötig ist */
+    text-align: left; /* Text im ul links ausrichten */
+    margin: 0 auto; /* ul zentrieren */
+}
+
+.details-options li {
+    position: relative;
+    padding-left: 20px; /* Platz für den Punkt */
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.details-options li::before {
+    content: "";
+    position: absolute;
+    left: 0; /* ganz links im li */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background-color: #333;
+    border-radius: 50%;
+}
