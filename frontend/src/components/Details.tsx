@@ -71,7 +71,7 @@ export default function Details(props: Readonly<DetailsProps>) {
                 </p>
                 <p>
                     <strong>Answer Explanation:</strong>{" "}
-                    {question.answerExplanation || "No explanation available"}
+                    {question.answerExplanation ?? "No explanation available"}
                 </p>
 
                 <img
