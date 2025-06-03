@@ -25,7 +25,8 @@ export default function ListOfAllQuestions(props: Readonly<ListOfAllQuestionsPro
 
     useEffect(() => {
         props.getAllActiveQuestions();
-    }, []);
+    }, [props.getAllActiveQuestions]);
+
 
     useEffect(() => {
         window.scroll(0, 0);
@@ -69,7 +70,6 @@ export default function ListOfAllQuestions(props: Readonly<ListOfAllQuestionsPro
         });
     }
 
-
     useEffect(() => {
         setFilteredQuestions(filterQuestions(props.allActiveQuestions, searchQuery, selectedCategoryEnum));
     }, [props.allActiveQuestions, searchQuery, selectedCategoryEnum]);
@@ -83,7 +83,6 @@ export default function ListOfAllQuestions(props: Readonly<ListOfAllQuestionsPro
     }
 
     const { currentQuestions, totalPages } = getPaginationData();
-
 
     return (
         <>
