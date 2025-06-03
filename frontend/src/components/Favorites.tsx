@@ -36,7 +36,7 @@ export default function Favorites(props: Readonly<FavoritesProps>) {
                     />
                 ))
             ) : (
-                <p>No Animals in favorites</p>
+                <p>No Word-Cards in favorites</p>
             )}
         </div>
     )

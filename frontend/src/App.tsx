@@ -69,10 +69,28 @@ export default function App() {
         }
     }
 
+    function getAppUserFavorites(){
+        axios.get<QuestionModel[]>(`/api/users/favorites`)
+            .then((response) => {
+                const favoriteIds = response.data.map((question) => question.id);
+                setFavorites(favoriteIds);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
     useEffect(() => {
         getUser();
         getAllActiveQuestions();
     }, []);
+
+    useEffect(() => {
+        if(user !== "anonymousUser"){
+            getUserDetails();
+            getAppUserFavorites();
+        }
+    }, [user]);
 
     function getAllActiveQuestions(){
         axios

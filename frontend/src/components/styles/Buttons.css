@@ -13,3 +13,26 @@
 #button-profile:hover {
     background-color: #7b1fa2; /* Dunkleres Violett beim Hover */
 }
+
+.active-profile-button{
+    background-color: #999;
+}
+.active-profile-button:hover{
+    cursor: default;
+}
+
+#buttons-profile-container {
+    padding:0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.space-between{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    margin-top: 10px;
+}
