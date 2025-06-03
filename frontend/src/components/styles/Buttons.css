@@ -6,6 +6,42 @@
     background-color: #007bff;
 }
 
+.button-group-button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+#button-high-score {
+    background-color: #ff9e00;
+}
+
+#button-high-score:hover {
+    background-color: #e67e00;
+}
+
+.space-between{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    margin-top: 10px;
+}
+
+.space-difficulty{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+#buttons-profile-container {
+    padding:0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 #button-profile {
     background-color: #9c27b0; /* Violett */
 }
@@ -21,18 +57,138 @@
     cursor: default;
 }
 
-#buttons-profile-container {
-    padding:0;
-    margin-top: 20px;
-    margin-bottom: 20px;
+#button-favorite-animal-card {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    outline: none;
+}
+.favorite-on {
+    color: red;
 }
 
-.space-between{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    margin-top: 10px;
+.favorite-off {
+    color: #999;
+}
+
+#active-button-my-animals{
+    background-color: #66bb6a;
+}
+#active-button-my-animals:hover{
+    background-color: #388e3c;
+}
+
+#button-is-inactive {
+    background-color: #999;
+}
+#button-is-inactive:hover {
+    background-color: #555;
+}
+#button-delete {
+    background-color: #ff9999;
+}
+
+#button-delete:hover {
+    background-color: #d32f2f;
+}
+
+#active-paginate{
+    background-color: #999;
+}
+#active-paginate:hover{
+    cursor: default;
+}
+
+.active-button-deck-difficulty{
+    background-color: #66bb6a;
+}
+.active-button-deck-difficulty:hover{
+    background-color: #388e3c;
+}
+
+.clickable-header.active-button-deck-difficulty {
+    background-color: #66bb6a;
+}
+.clickable-header.active-button-deck-difficulty:hover {
+    background-color: #388e3c;
+}
+
+
+#start-button {
+    border: 4px solid transparent;
+    animation: borderAnimation 2s infinite ease-in-out
+}
+
+@keyframes borderAnimation {
+    0% {
+        border-color: #66bb6a; /* Startfarbe */
+    }
+    33% {
+        border-color: #ff9e00; /* Zweite Farbe */
+    }
+    66% {
+        border-color: #e67e00;; /* Dritte Farbe */
+    }
+    100% {
+        border-color: #388e3c; /* Zurück zur Startfarbe */
+    }
+}
+
+#button-border-animation{
+    border-radius: 10px;
+    border: 4px solid transparent;
+    animation: borderAnimation 2s infinite ease-in-out
+}
+
+#button-border-animation:focus {
+    outline: none; /* Optional: Entfernt den Standard-Fokusrahmen!*/
+}
+
+.margin-top-50{
+    margin-top: 50px;
+}
+
+.margin-top-20{
+    margin-top: 20px;
+}
+
+#button-favorite-question-card {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    outline: none;
+}
+.favorite-on {
+    color: red;
+}
+
+.favorite-off {
+    color: #999;
+}
+
+#active-button-my-questions{
+    background-color: #66bb6a;
+}
+#active-button-my-questions:hover{
+    background-color: #388e3c;
+}
+
+#button-is-inactive {
+    background-color: #999;
+}
+#button-is-inactive:hover {
+    background-color: #555;
+}
+#button-delete {
+    background-color: #ff9999;
+}
+
+#button-delete:hover {
+    background-color: #d32f2f;
 }
