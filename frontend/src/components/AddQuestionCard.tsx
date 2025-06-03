@@ -15,7 +15,7 @@ type AddQuestionCardProps = {
 export default function AddQuestionCard(props:Readonly<AddQuestionCardProps>){
     const [title, setTitle] = useState<string>("");
     const [categoryEnum, setCategoryEnum] = useState<NullableCategoryEnum>("");
-    const [clueWords, setClueWords] = useState<string[]>([""]);
+    const [clueWords, setClueWords] = useState<string[]>(["", "", "", ""]);
     const [solutionWord, setSolutionWord] = useState<string>("")
     const [answerExplanation, setAnswerExplanation] = useState<string>("");
     const [image, setImage] = useState<File | null>(null);
@@ -115,14 +115,36 @@ export default function AddQuestionCard(props:Readonly<AddQuestionCardProps>){
                     </select>
                 </label>
 
-                <label>
-                    Clue Words (one per line):
-                    <textarea
-                        className="textarea-large"
-                        value={clueWords.join("\n")}
-                        onChange={(e) => setClueWords(e.target.value.split("\n"))}
-                    />
+                <label className="add-question-label">
+                    Clue Words:
+                    <div className="clue-word-grid">
+                        {clueWords.map((word, index) => (
+                            <input
+                                key={index}
+                                type="text"
+                                className="input-small"
+                                placeholder={`Clue word ${index + 1}`}
+                                value={word}
+                                onChange={(e) => {
+                                    const updated = [...clueWords];
+                                    updated[index] = e.target.value;
+                                    setClueWords(updated);
+                                }}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="space-between">
+                        <button
+                            className="button-group-button margin-top-10"
+                            type="button"
+                            onClick={() => setClueWords([...clueWords, ""])}
+                        >
+                            + Add Clue Word
+                        </button>
+                    </div>
                 </label>
+
 
                 <label>
                     Solution Word:

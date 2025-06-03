@@ -83,4 +83,11 @@
     margin-top: 0.5rem;
 }
 
+.clue-word-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
 
