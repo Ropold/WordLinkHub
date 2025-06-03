@@ -164,16 +164,39 @@ export default function MyQuestions(props: Readonly<MyQuestionsProps>) {
                             />
                         </label>
 
-                        <label>
-                            Clue Words (comma-separated):
-                            <input
-                                className="input-small"
-                                type="text"
-                                value={editData?.clueWords.join(", ") ?? ""}
-                                onChange={(e) =>
-                                    setEditData({ ...editData!, clueWords: e.target.value.split(",").map(w => w.trim()) })
-                                }
-                            />
+                        <label className="add-question-label">
+                            Clue Words:
+                            <div className="clue-word-grid">
+                                {editData?.clueWords.map((word, index) => (
+                                    <input
+                                        key={index}
+                                        type="text"
+                                        className="input-small"
+                                        placeholder={`Clue word ${index + 1}`}
+                                        value={word}
+                                        onChange={(e) => {
+                                            const updated = [...editData.clueWords];
+                                            updated[index] = e.target.value;
+                                            setEditData({ ...editData, clueWords: updated });
+                                        }}
+                                    />
+                                ))}
+                            </div>
+
+                            <div className="space-between">
+                                <button
+                                    className="button-group-button margin-top-10"
+                                    type="button"
+                                    onClick={() =>
+                                        setEditData({
+                                            ...editData!,
+                                            clueWords: [...editData!.clueWords, ""],
+                                        })
+                                    }
+                                >
+                                    + Add Clue Word
+                                </button>
+                            </div>
                         </label>
 
                         <label>
