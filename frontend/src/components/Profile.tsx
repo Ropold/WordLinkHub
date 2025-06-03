@@ -6,6 +6,7 @@ import MyQuestions from "./MyQuestions.tsx";
 import Favorites from "./Favorites.tsx";
 import AddQuestionCard from "./AddQuestionCard.tsx";
 import "./styles/Profile.css"
+import "./styles/Popup.css";
 
 type ProfileProps = {
     user: string;
