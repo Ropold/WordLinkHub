@@ -9,7 +9,7 @@ type ListOfAllQuestionsProps = {
     allActiveQuestions: QuestionModel[];
     getAllActiveQuestions: () => void;
 }
-export default function ListOfAllQuestion(props: Readonly<ListOfAllQuestionsProps>){
+export default function ListOfAllQuestions(props: Readonly<ListOfAllQuestionsProps>){
     return (
         <>
         <h2>List Of All Question</h2>

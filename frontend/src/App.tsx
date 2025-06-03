@@ -13,10 +13,8 @@ import type {QuestionModel} from "./components/model/QuestionModel.ts";
 import Play from "./components/Play.tsx";
 import Details from "./components/Details.tsx";
 import HighScore from "./components/HighScore.tsx";
+import ListOfAllQuestions from "./components/ListOfAllQuestions.tsx";
 
-function ListOfAllQuestions() {
-    return null;
-}
 
 export default function App() {
     const [user, setUser] = useState<string>("anonymousUser");
@@ -115,7 +113,7 @@ export default function App() {
               <Route path="/" element={<Welcome />} />
               <Route path="/play" element={<Play />} />
               <Route path="/list-of-all-questions" element={<ListOfAllQuestions user={user} favorites={favorites} toggleFavorite={toggleFavorite} currentPage={currentPage} setCurrentPage={setCurrentPage} allActiveQuestions={allActiveQuestions} getAllActiveQuestions={getAllActiveQuestions}/>}/>
-              <Route path="/question/:id" element={<Details />}/>
+              <Route path="/question/:id" element={<Details user={user} favorites={favorites} toggleFavorite={toggleFavorite}/>}/>
               <Route path="/high-score" element={<HighScore />}/>
 
               <Route element={<ProtectedRoute user={user} />}>
