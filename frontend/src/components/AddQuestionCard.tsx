@@ -105,6 +105,7 @@ export default function AddQuestionCard(props:Readonly<AddQuestionCardProps>){
                         className="input-small"
                         value={categoryEnum}
                         onChange={(e) => setCategoryEnum(e.target.value as NullableCategoryEnum)}
+                        required
                     >
                         <option value="">Please select a category</option>
                         {ALL_CATEGORIES.map((category) => (
