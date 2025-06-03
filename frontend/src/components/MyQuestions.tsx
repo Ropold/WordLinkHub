@@ -12,9 +12,9 @@ type MyQuestionsProps = {
     isEditing: boolean;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
     userQuestions: QuestionModel[];
-    getUserQuestions: () => void;
     setUserQuestions: React.Dispatch<React.SetStateAction<QuestionModel[]>>;
 }
+
 export default function MyQuestions(props: Readonly<MyQuestionsProps>) {
 
     const [editData, setEditData] = useState<QuestionModel | null>(null);
