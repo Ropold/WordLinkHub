@@ -1,0 +1,181 @@
+.high-score {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.high-score-item-container-compressed {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.high-score-item-container-detailed {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.high-score-table {
+    width: 100%;  /* Jetzt auf 100%, sodass die Tabellen untereinander passen */
+    max-width: 1000px; /* Optional: Limitiert die maximale Breite für bessere Darstellung */
+    background-color: #f9f9f9;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Fügt Abstand zwischen den Tabellen hinzu */
+}
+
+.high-score-table-compressed{
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hover-Effekt nur für komprimierte Tabellen */
+.high-score-table-compressed:hover {
+    transform: scale(1.03);
+    cursor: pointer; /* Zeigt den Hand-Cursor an */
+}
+
+
+.high-score-table-compressed-h3 {
+    font-size: 1.3rem;
+    color: #444;
+    padding: 5px;
+    margin-bottom: 15px;
+    border: 4px solid #66b3ff;
+    border-radius: 10px;
+}
+
+
+.high-score-table-h3 {
+    font-size: 1.3rem;
+    color: #444;
+    border: 4px solid #66b3ff;
+    border-radius: 10px;
+    width:40%;
+    margin: 0 auto 15px;
+}
+
+table {
+    width: 100%;  /* Stellt sicher, dass die Tabelle die gesamte Breite des Containers nutzt */
+    border-collapse: collapse;
+    text-align: center;
+}
+
+th, td {
+    padding: 12px;  /* Erhöht das Padding, um die Zeilenhöhe zu vergrößern */
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #ff9e00;
+    white-space: nowrap; /* Verhindert Zeilenumbrüche in den Kopfzellen */
+}
+
+td {
+    color: #555;
+    white-space: nowrap; /* Verhindert Zeilenumbrüche in den Datenzellen */
+    text-overflow: ellipsis; /* Verhindert, dass Text aus der Zelle herausragt */
+    overflow: hidden;  /* Verhindert Überlauf in den Zellen */
+}
+
+tbody tr td {
+    border-bottom: 1px solid #ff9e00; /* Orange Linie für jede Tabellenzeile */
+}
+
+tbody tr:last-child td {
+    border-bottom: 2px solid #ff9e00; /* Dickerer Abschluss für die letzte Zeile */
+}
+
+/* Light Mode Hover-Effekt */
+tbody tr:hover {
+    background-color: #f1f1f1; /* Hellerer Hover-Effekt im Light Mode */
+}
+
+
+/* Dark Mode Anpassungen */
+@media (prefers-color-scheme: dark) {
+    .high-score-table {
+        background-color: #333; /* Dunkler Hintergrund für die Tabelle */
+        color: #fff; /* Weißer Text für die gesamte Tabelle */
+    }
+
+    .high-score-table h3 {
+        color: #fff;
+        border: 4px solid #66b3ff; /* Behalte die blaue Randfarbe für den Header */
+    }
+
+    th {
+        background-color: #ff9e00; /* Behalte das orange für die Kopfzeilen */
+        color: #fff; /* Weißer Text für die Kopfzeilen */
+    }
+
+    td {
+        color: #ccc; /* Helle Farbe für Text in den Zellen */
+    }
+
+    tbody tr td {
+        border-bottom: 1px solid #555; /* Dunklerer Rand für Tabellenzeilen im Dark Mode */
+    }
+
+    tbody tr:last-child td {
+        border-bottom: 2px solid #555; /* Dickerer Rand für die letzte Zeile */
+    }
+
+    /* Hover-Effekt für Dark Mode */
+    tbody tr:hover {
+        background-color: #444; /* Dunklerer Hover-Effekt */
+    }
+}
+
+
+@media (max-width: 768px) {
+    .high-score-item-container {
+        flex-direction: column; /* Setzt die Reihenfolge auf vertikal */
+        overflow-x: auto;  /* Ermöglicht horizontales Scrollen auf kleinen Bildschirmen */
+    }
+
+    .high-score-table {
+        width: 100%; /* Die Tabellen nehmen nun die volle Breite ein */
+        margin-bottom: 20px; /* Fügt Abstand zwischen den Tabellen hinzu */
+    }
+}
+
+.high-score-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 20px auto;
+}
+
+.playerName {
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+    width: 100%;
+    height: 40px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border 0.3s ease;
+    white-space: nowrap;  /* Verhindert Zeilenumbrüche im Eingabefeld */
+    overflow: hidden;  /* Verhindert Überlauf */
+    text-overflow: ellipsis; /* Gibt an, dass Text bei Überlauf abgeschnitten wird */
+}
+
+@media (prefers-color-scheme: dark) {
+    .playerName {
+        color: #fff; /* Weißer Text im Dark Mode */
+        background-color: #333; /* Dunkler Hintergrund im Dark Mode */
+        border: 1px solid #555; /* Etwas dunklerer Rand im Dark Mode */
+    }}
+
