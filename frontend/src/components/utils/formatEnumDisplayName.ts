@@ -18,6 +18,7 @@ export function formatEnumDisplayName(value: string): string {
         case "POLITICS": return "🏛️ Politics";
         case "SCIENCE": return "🔬 Science";
         case "SPORTS": return "🏅 Sports";
+        case "RANDOM": return "🎲 Random";
 
         default: return value;
     }

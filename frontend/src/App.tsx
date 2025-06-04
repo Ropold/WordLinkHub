@@ -14,6 +14,7 @@ import Play from "./components/Play.tsx";
 import Details from "./components/Details.tsx";
 import HighScore from "./components/HighScore.tsx";
 import ListOfAllQuestions from "./components/ListOfAllQuestions.tsx";
+import type {HighScoreModel} from "./components/model/HighScoreModel.ts";
 
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
     const [allActiveQuestions, setAllActiveQuestions] = useState<QuestionModel[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
 
+    const [highScore, setHighScore] = useState<HighScoreModel[]>([]);
 
     function getUser() {
         axios.get("/api/users/me")
@@ -101,6 +103,17 @@ export default function App() {
             });
     }
 
+    function getHighScore() {
+        axios
+            .get("/api/high-score")
+            .then((response) => {
+                setHighScore(response.data);
+            })
+            .catch((error) => {
+                console.error("Error fetching high score: ", error);
+            });
+    }
+
     function handleNewQuestionSubmit(newQuestion: QuestionModel) {
         setAllActiveQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
     }
@@ -114,7 +127,7 @@ export default function App() {
               <Route path="/play" element={<Play />} />
               <Route path="/list-of-all-questions" element={<ListOfAllQuestions user={user} favorites={favorites} toggleFavorite={toggleFavorite} currentPage={currentPage} setCurrentPage={setCurrentPage} allActiveQuestions={allActiveQuestions} getAllActiveQuestions={getAllActiveQuestions}/>}/>
               <Route path="/question/:id" element={<Details user={user} favorites={favorites} toggleFavorite={toggleFavorite}/>}/>
-              <Route path="/high-score" element={<HighScore />}/>
+              <Route path="/high-score" element={<HighScore highScore={highScore} getHighScore={getHighScore} />}/>
 
               <Route element={<ProtectedRoute user={user} />}>
                   <Route path="/profile/*" element={<Profile user={user} userDetails={userDetails} handleNewQuestionSubmit={handleNewQuestionSubmit} favorites={favorites} toggleFavorite={toggleFavorite}/>} />
