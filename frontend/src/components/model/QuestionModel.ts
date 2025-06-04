@@ -14,7 +14,7 @@ export type QuestionModel = {
 
 export const DefaultQuestion: QuestionModel = {
     id: "",
-    title: "Errate das Wort!",
+    title: "Gelbes Obst",
     categoryEnum: "GENERAL",
     clueWords: [
         "Obst",

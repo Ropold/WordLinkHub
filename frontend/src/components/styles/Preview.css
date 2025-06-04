@@ -1,0 +1,51 @@
+.border{
+    border: 4px solid #ff9e00;
+    width: 70%;
+    margin: 40px auto 0 auto;
+}
+
+.game-clue-words {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+}
+
+.clue-button{
+    margin-right: 10px;
+    margin-left: 10px
+    !important; cursor: default;
+}
+
+.game-solution{
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.game-question {
+    font-size: 1.25rem;
+    color: #ff9e00;
+    text-align: center;
+    margin-bottom: 1rem;
+    word-wrap: break-word; /* Bricht lange Wörter */
+    white-space: normal;    /* Erlaubt Umbrüche */
+    max-width: 70%;         /* Optional: begrenzt Breite für bessere Lesbarkeit */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.solution-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-solution{
+    width: 300px;
+    height: 40px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
