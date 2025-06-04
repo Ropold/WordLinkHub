@@ -1,0 +1,23 @@
+/* Stil für das Begrüßungsbild */
+.logo-welcome {
+    width: 80%; /* Bildbreite auf 80% der Elternelementbreite setzen */
+    max-width: 600px; /* Maximalbreite auf 600px begrenzen */
+    margin-top: 25px;
+    padding: 5px;
+    border: 5px solid #66b3ff; /* Schwarze, 5px dicke Border */
+    border-radius: 10px; /* Abgerundete Ecken */
+    transition: transform 0.5s ease, box-shadow 0.5s ease; /* Beide Effekte haben die gleiche Dauer und beginnen gleichzeitig */
+}
+
+.logo-welcome:hover {
+    border-color: #388e3c; /* Farbe der Border bei Hover-Effekt ändern */
+    transform: scale(1.03); /* Skaliert das Bild leicht beim Hover */
+    box-shadow: 1px 4px 20px rgba(0, 0, 0, 0.8); /* Leichter Schatten bei Hover */
+    cursor: pointer;
+}
+
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
