@@ -1,7 +1,8 @@
 import type {HighScoreModel} from "./model/HighScoreModel.ts";
 import "./styles/HighScore.css"
 import axios from "axios";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {formatEnumDisplayName} from "./utils/formatEnumDisplayName.ts";
 
 type HighScoreProps = {
     highScore: HighScoreModel[];
@@ -46,7 +47,47 @@ export default function HighScore(props: Readonly<HighScoreProps>) {
         });
     }
 
-    return(
-        <h2>HighScore</h2>
-    )
+    useEffect(() => {
+        fetchGithubUsernames(props.highScore);
+    }, [props.highScore]);
+
+    useEffect(() => {
+        props.getHighScore();
+    }, [props.getHighScore]);
+
+    return (
+        <div className="high-score-table margin-top-20">
+            <h3 className="high-score-table-h3">High-Score</h3>
+            <table className="margin-top-20">
+                <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player-Name</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Wrong Answers</th>
+                    <th>Authentication</th>
+                    <th>Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                {props.highScore.map((highScore, index) => (
+                    <tr key={highScore.id}>
+                        <td>{index + 1}</td>
+                        <td>{highScore.playerName}</td>
+                        <td>{formatDate(highScore.date)}</td>
+                        <td>{formatEnumDisplayName(highScore.categoryEnum)}</td>
+                        <td>{highScore.wrongAnswerCount}</td>
+                        <td>
+                            {highScore.githubId === "anonymousUser"
+                                ? "Anonymous"
+                                : `Github-User (${githubUsernames.get(highScore.githubId) || "Loading..."})`}
+                        </td>
+                        <td>{highScore.scoreTime}</td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+        </div>
+    );
 }
