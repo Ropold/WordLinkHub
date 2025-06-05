@@ -1,0 +1,74 @@
+#category-play{
+    width: 30%;
+}
+
+.play-category-card-image {
+    max-height: 50px;
+    max-width: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.win-animation {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: white;
+    background-color: #28a745;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    animation: bounceIn 1s ease-out forwards;
+    z-index: 1000; /* Stellt sicher, dass es über allem liegt */
+}
+
+.win-animation-perfect {
+    background-color: #66bb6a;
+    border-color: #388e3c;
+    color: white;
+}
+
+.win-animation-good {
+    background-color: #ff9e00;
+    border-color: #cc7a00;
+    color: white;
+}
+
+.win-animation-ok {
+    background-color: #ff9999;
+    border-color: #d32f2f;
+    color: black;
+}
+
+.win-animation-bad {
+    background-color: #9c27b0;
+    border-color: #6d1b7b;
+    color: white;
+}
+
+.play-question-image{
+    height: 50px;
+    width: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+@keyframes bounceIn {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}

@@ -22,7 +22,6 @@ export default function Preview(){
 
             <div className="solution-input">
                 <label>
-
                     <input
                         className="input-solution"
                         type="text"
@@ -31,7 +30,6 @@ export default function Preview(){
                 </label>
                 <button className="button-group-button clue-button" id="check-button">Check</button>
             </div>
-
 
             <div className="game-solution">
                 <p> <strong>Lösung: </strong>{question.solutionWord} ✅</p>
