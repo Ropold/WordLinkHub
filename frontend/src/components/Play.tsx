@@ -135,7 +135,7 @@ export default function Play(props: Readonly<PlayProps>) {
                 <div className="space-between">
                     <p>Question Index {currentQuestionIndex + 1}/10</p>
                     <p>Mistakes {wrongAnswerCount}/10</p>
-                    {/*<p>⏱️ Time: {time.toFixed(1)} sec</p>*/}
+                    <p>⏱️ Time: {time.toFixed(1)} sec</p>
                     <div>
                         <img
                             src={
@@ -186,7 +186,7 @@ export default function Play(props: Readonly<PlayProps>) {
 
             {!showPreviewMode &&
                 currentQuestions &&
-                currentQuestions.length > 0 && <Game />}
+                currentQuestions.length > 0 && <Game currentQuestions={currentQuestions} setGameFinished={setGameFinished} setWrongAnswerCount={setWrongAnswerCount} currentQuestionIndex={currentQuestionIndex} setCurrentQuestionIndex={setCurrentQuestionIndex} setShowWinAnimation={setShowWinAnimation} resetSignal={resetSignal}/>}
         </>
     );
 }

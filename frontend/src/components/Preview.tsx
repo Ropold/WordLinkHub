@@ -32,8 +32,8 @@ export default function Preview(){
             </div>
 
             <div className="game-solution">
-                <p> <strong>Lösung: </strong>{question.solutionWord} ✅</p>
-                <p><strong>Erklärung: </strong>{question.answerExplanation}</p>
+                <p> <strong>Solution: </strong>{question.solutionWord} ✅</p>
+                <p><strong>Explanation: </strong>{question.answerExplanation}</p>
             </div>
         </div>
     );

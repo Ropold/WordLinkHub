@@ -1,6 +1,138 @@
+import type {QuestionModel} from "./model/QuestionModel.ts";
+import {useEffect, useRef, useState} from "react";
+import {formatEnumDisplayName} from "./utils/formatEnumDisplayName.ts";
 
-export default function Game(){
+type GameProps = {
+    currentQuestions: QuestionModel[];
+    setGameFinished: React.Dispatch<React.SetStateAction<boolean>>;
+    setWrongAnswerCount: React.Dispatch<React.SetStateAction<number>>;
+    currentQuestionIndex: number;
+    setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
+    setShowWinAnimation: React.Dispatch<React.SetStateAction<boolean>>;
+    resetSignal:number;
+}
+
+export default function Game(props: Readonly<GameProps>) {
+    const [userInput, setUserInput] = useState("");
+    const [showSolution, setShowSolution] = useState<boolean>(false);
+    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+
+    const currentQuestion = props.currentQuestions[props.currentQuestionIndex];
+
+    const handleSubmit = () => {
+        if (showSolution) return;
+
+        const correct = userInput.trim().toLowerCase() === currentQuestion.solutionWord.toLowerCase();
+        setIsCorrect(correct);
+        setShowSolution(true);
+
+        if (!correct) {
+            props.setWrongAnswerCount(prev => prev + 1);
+        }
+
+        const isLast = props.currentQuestionIndex === props.currentQuestions.length - 1;
+        if (isLast) {
+            setTimeout(() => {
+                props.setShowWinAnimation(true);
+                props.setGameFinished(true);
+                setTimeout(() => props.setShowWinAnimation(false), 5000);
+            }, 1000);
+        }
+    };
+
+    const handleNext = () => {
+        if (props.currentQuestionIndex + 1 >= props.currentQuestions.length) {
+            props.setGameFinished(true);
+        } else {
+            props.setCurrentQuestionIndex(prev => prev + 1);
+            setUserInput("");
+            setIsCorrect(null);
+            setShowSolution(false);
+        }
+    };
+
+    useEffect(() => {
+        setUserInput("");
+        setIsCorrect(null);
+        setShowSolution(false);
+    }, [props.resetSignal, props.currentQuestionIndex]);
+
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (showSolution && e.key === "Enter") {
+                e.preventDefault();
+                handleNext();
+            }
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [showSolution]);
+
+    useEffect(() => {
+        if (!showSolution && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [showSolution]);
+
+
     return (
-        <h2>Game</h2>
-    )
+        <div className="border">
+
+            <p><strong>Category:</strong> {formatEnumDisplayName(currentQuestion.categoryEnum)}</p>
+
+            <p><strong>Clues:</strong></p>
+            <div className="game-clue-words">
+                {currentQuestion.clueWords.map((clue, idx) => (
+                    <button key={idx} className="button-group-button clue-button">
+                        {clue}
+                    </button>
+                ))}
+            </div>
+
+            {!showSolution && (
+                <>
+                    <p><strong>Your guess:</strong></p>
+                    <form
+                        className="solution-input margin-bottom-20"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSubmit();
+                        }}
+                    >
+                        <label>
+                            <input
+                                ref={inputRef}
+                                className="input-solution"
+                                type="text"
+                                placeholder="Enter your solution..."
+                                value={userInput}
+                                onChange={(e) => setUserInput(e.target.value)}
+                            />
+                        </label>
+                        <button type="submit" className="button-group-button clue-button" id="check-button">
+                            Check
+                        </button>
+                    </form>
+                </>
+            )}
+
+
+            {showSolution && (
+                <div className="game-solution">
+                    <p>
+                        <strong>Correct answer: </strong>
+                        {currentQuestion.solutionWord} {isCorrect ? "✅" : "❌"}
+                    </p>
+                    <p><strong>Explanation: </strong>{currentQuestion.answerExplanation}</p>
+                    <button className="button-group-button margin-bottom-20" onClick={handleNext}>
+                        Next
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+
+
 }
