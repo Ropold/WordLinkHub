@@ -1,6 +1,7 @@
 import type {QuestionModel} from "./model/QuestionModel.ts";
 import {useEffect, useRef, useState} from "react";
 import {formatEnumDisplayName} from "./utils/formatEnumDisplayName.ts";
+import {distance} from "fastest-levenshtein";
 
 type GameProps = {
     currentQuestions: QuestionModel[];
@@ -18,17 +19,21 @@ export default function Game(props: Readonly<GameProps>) {
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    const MAX_DISTANCE = 2; // Toleranz für 1–2 Zeichenfehler
 
     const currentQuestion = props.currentQuestions[props.currentQuestionIndex];
 
     const handleSubmit = () => {
         if (showSolution) return;
 
-        const correct = userInput.trim().toLowerCase() === currentQuestion.solutionWord.toLowerCase();
-        setIsCorrect(correct);
+        const trimmedInput = userInput.trim().toLowerCase();
+        const correctAnswer = currentQuestion.solutionWord.toLowerCase();
+        const isAnswerCorrect = distance(trimmedInput, correctAnswer) <= MAX_DISTANCE;
+
+        setIsCorrect(isAnswerCorrect);
         setShowSolution(true);
 
-        if (!correct) {
+        if (!isAnswerCorrect) {
             props.setWrongAnswerCount(prev => prev + 1);
         }
 
@@ -126,7 +131,7 @@ export default function Game(props: Readonly<GameProps>) {
                         {currentQuestion.solutionWord} {isCorrect ? "✅" : "❌"}
                     </p>
                     <p><strong>Explanation: </strong>{currentQuestion.answerExplanation}</p>
-                    <button className="button-group-button margin-bottom-20" onClick={handleNext}>
+                    <button className="margin-bottom-20" id="check-button" onClick={handleNext}>
                         Next
                     </button>
                 </div>
