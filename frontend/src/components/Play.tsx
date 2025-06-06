@@ -2,12 +2,13 @@ import type { QuestionModel } from "./model/QuestionModel.ts";
 import type { HighScoreModel } from "./model/HighScoreModel.ts";
 import Preview from "./Preview.tsx";
 import Game from "./Game.tsx";
-import { useMemo, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import { ALL_CATEGORIES, type CategoryEnum } from "./model/CategoryEnum.ts";
 import { categoryEnumImages } from "./utils/CategoryEnumImages.ts";
 import headerLogo from "../assets/logo-word-link.jpg";
 import { formatEnumDisplayName } from "./utils/formatEnumDisplayName.ts";
 import "./styles/Play.css";
+import axios from "axios";
 
 type PlayProps = {
     user: string;
@@ -35,6 +36,19 @@ export default function Play(props: Readonly<PlayProps>) {
     const [showNameInput, setShowNameInput] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
+
+    useEffect(() => {
+        if (!showPreviewMode && !gameFinished) {
+            setTime(0);
+            const id = window.setInterval(() => {
+                setTime((prev) => prev + 0.1);
+            }, 100);
+            setIntervalId(id);
+        } else if (intervalId) {
+            clearInterval(intervalId);
+            setIntervalId(null);
+        }
+    }, [showPreviewMode, gameFinished]);
 
     const activeCategories = useMemo(
         () =>
@@ -69,6 +83,62 @@ export default function Play(props: Readonly<PlayProps>) {
     };
 
     const currentQuestion = currentQuestions[currentQuestionIndex];
+
+    function handleSaveHighScore() {
+        if (playerName.trim().length < 3) {
+            setPopupMessage("Your name must be at least 3 characters long!");
+            setShowPopup(true);
+            return;
+        }
+        postHighScore();
+    }
+
+    function postHighScore() {
+        const highScoreData = {
+            id: null,
+            playerName: playerName,
+            githubId: props.user,
+            categoryEnum: categoryEnum,
+            wrongAnswerCount: wrongAnswerCount,
+            scoreTime: parseFloat(time.toFixed(1)),
+            date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
+        }
+
+        axios.post("/api/high-score", highScoreData)
+            .then(() => {
+                setShowNameInput(false);
+            })
+            .catch((error) => {
+                console.error("Error saving high score:", error);
+                setPopupMessage("An error occurred while saving your high score. Please try again.");
+                setShowPopup(true);
+            })
+    }
+
+    function checkForHighScore() {
+        if (props.highScore.length < 10) {
+            setIsNewHighScore(true);
+            setShowNameInput(true);
+            return;
+        }
+
+        const lowestHighScore = props.highScore[props.highScore.length - 1];
+        const isBetterScore =
+            wrongAnswerCount < lowestHighScore.wrongAnswerCount ||
+            (wrongAnswerCount === lowestHighScore.wrongAnswerCount && time < lowestHighScore.scoreTime);
+
+        if (isBetterScore) {
+            setIsNewHighScore(true);
+            setShowNameInput(true);
+        }
+    }
+
+
+    useEffect(() => {
+        if (gameFinished && currentQuestionIndex === 9) {
+            checkForHighScore();
+        }
+    }, [gameFinished]);
 
     function handleStartGame() {
         setCurrentQuestionIndex(0);
@@ -148,6 +218,66 @@ export default function Play(props: Readonly<PlayProps>) {
                             className="play-question-image"
                         />
                     </div>
+                </div>
+            )}
+
+            {isNewHighScore && showNameInput && (
+                <form
+                    className="high-score-input"
+                    onSubmit={(e) => {
+                        e.preventDefault(); // Verhindert das Neuladen der Seite
+                        handleSaveHighScore();
+                    }}
+                >
+                    <label htmlFor="playerName">
+                        Congratulations! You secured a spot on the high score list. Enter your name:
+                    </label>
+                    <input
+                        className="playerName"
+                        type="text"
+                        id="playerName"
+                        value={playerName}
+                        onChange={(e) => setPlayerName(e.target.value)}
+                        placeholder="Enter your name"
+                    />
+                    <button
+                        className="button-group-button"
+                        id="button-border-animation"
+                        type="submit"
+                    >
+                        Save Highscore
+                    </button>
+                </form>
+            )}
+
+            {showPopup && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h3>Hinweis</h3>
+                        <p>{popupMessage}</p>
+                        <div className="popup-actions">
+                            <button onClick={() => setShowPopup(false)} className="popup-confirm">
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showWinAnimation && (
+                <div className={getWinClass()}>
+                    <p>
+                        🎉 You completed the quiz
+                        {wrongAnswerCount === 0
+                            ? " perfectly with no mistakes! Incredible job! 🌟"
+                            : wrongAnswerCount <= 2
+                                ? ` with only ${wrongAnswerCount} mistake${wrongAnswerCount === 1 ? "" : "s"}. Excellent result! 💪`
+                                : wrongAnswerCount <= 5
+                                    ? ` with ${wrongAnswerCount} mistakes. Solid effort – some tricky questions there! 🧠`
+                                    : wrongAnswerCount < 10
+                                        ? ` with ${wrongAnswerCount} mistakes. It was a tough quiz – better luck next time! 🤔`
+                                        : " but missed every question. That was brutal – give it another shot! 🔄"}
+                    </p>
                 </div>
             )}
 
