@@ -116,22 +116,26 @@ export default function Play(props: Readonly<PlayProps>) {
     }
 
     function checkForHighScore() {
-        if (props.highScore.length < 10) {
+        const highScores = props.highScore;
+
+        if (highScores.length < 10) {
             setIsNewHighScore(true);
             setShowNameInput(true);
             return;
         }
 
-        const lowestHighScore = props.highScore[props.highScore.length - 1];
+        const lastScore = highScores[highScores.length - 1];
+
         const isBetterScore =
-            wrongAnswerCount < lowestHighScore.wrongAnswerCount ||
-            (wrongAnswerCount === lowestHighScore.wrongAnswerCount && time < lowestHighScore.scoreTime);
+            wrongAnswerCount < lastScore.wrongAnswerCount ||
+            (wrongAnswerCount === lastScore.wrongAnswerCount && time < lastScore.scoreTime);
 
         if (isBetterScore) {
             setIsNewHighScore(true);
             setShowNameInput(true);
         }
     }
+
 
 
     useEffect(() => {
@@ -159,6 +163,7 @@ export default function Play(props: Readonly<PlayProps>) {
     function handleResetCurrentQuiz() {
         setCurrentQuestionIndex(0);
         setWrongAnswerCount(0);
+        setTime(0);
         setIsNewHighScore(false);
         setShowNameInput(false);
         setShowWinAnimation(false);

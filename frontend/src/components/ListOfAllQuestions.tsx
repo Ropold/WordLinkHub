@@ -25,7 +25,7 @@ export default function ListOfAllQuestions(props: Readonly<ListOfAllQuestionsPro
 
     useEffect(() => {
         props.getAllActiveQuestions();
-    }, [props.getAllActiveQuestions]);
+    }, []);
 
 
     useEffect(() => {
