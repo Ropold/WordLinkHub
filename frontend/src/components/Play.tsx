@@ -38,7 +38,6 @@ export default function Play(props: Readonly<PlayProps>) {
     const [popupMessage, setPopupMessage] = useState("");
 
     const inputRef = useRef<HTMLInputElement>(null);
-    const startButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         if (!showPreviewMode && !gameFinished) {
@@ -196,7 +195,6 @@ export default function Play(props: Readonly<PlayProps>) {
         <>
             <div className="space-between">
                 <button
-                    ref={startButtonRef}
                     className="button-group-button"
                     id={gameFinished ? "start-button" : undefined}
                     onClick={handleStartGame}
@@ -339,7 +337,7 @@ export default function Play(props: Readonly<PlayProps>) {
 
             {!showPreviewMode &&
                 currentQuestions &&
-                currentQuestions.length > 0 && <Game currentQuestions={currentQuestions} setGameFinished={setGameFinished} setWrongAnswerCount={setWrongAnswerCount} currentQuestionIndex={currentQuestionIndex} setCurrentQuestionIndex={setCurrentQuestionIndex} setShowWinAnimation={setShowWinAnimation} resetSignal={resetSignal}/>}
+                currentQuestions.length > 0 && <Game currentQuestions={currentQuestions} setGameFinished={setGameFinished} setWrongAnswerCount={setWrongAnswerCount} currentQuestionIndex={currentQuestionIndex} setCurrentQuestionIndex={setCurrentQuestionIndex} setShowWinAnimation={setShowWinAnimation} resetSignal={resetSignal} handleStartGame={handleStartGame}/>}
         </>
     );
 }

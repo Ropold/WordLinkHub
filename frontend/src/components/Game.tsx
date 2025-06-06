@@ -11,6 +11,7 @@ type GameProps = {
     setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
     setShowWinAnimation: React.Dispatch<React.SetStateAction<boolean>>;
     resetSignal:number;
+    handleStartGame: () => void;
 }
 
 export default function Game(props: Readonly<GameProps>) {
@@ -131,9 +132,24 @@ export default function Game(props: Readonly<GameProps>) {
                         {currentQuestion.solutionWord} {isCorrect ? "✅" : "❌"}
                     </p>
                     <p><strong>Explanation: </strong>{currentQuestion.answerExplanation}</p>
-                    <button className="margin-bottom-20" id="check-button" onClick={handleNext}>
-                        Next
-                    </button>
+
+                    {props.currentQuestionIndex === props.currentQuestions.length - 1 ? (
+                        <button
+                            className="margin-bottom-20"
+                            id="check-button"
+                            onClick={props.handleStartGame}
+                        >
+                            Again
+                        </button>
+                    ) : (
+                        <button
+                            className="margin-bottom-20"
+                            id="check-button"
+                            onClick={handleNext}
+                        >
+                            Next
+                        </button>
+                    )}
                 </div>
             )}
         </div>
