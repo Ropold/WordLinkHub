@@ -124,7 +124,7 @@ export default function App() {
           <Routes>
               <Route path="*" element={<NotFound />} />
               <Route path="/" element={<Welcome />} />
-              <Route path="/play" element={<Play />} />
+              <Route path="/play" element={<Play user={user} allActiveQuestions={allActiveQuestions} highScore={highScore} getHighScore={getHighScore}/>} />
               <Route path="/list-of-all-questions" element={<ListOfAllQuestions user={user} favorites={favorites} toggleFavorite={toggleFavorite} currentPage={currentPage} setCurrentPage={setCurrentPage} allActiveQuestions={allActiveQuestions} getAllActiveQuestions={getAllActiveQuestions}/>}/>
               <Route path="/question/:id" element={<Details user={user} favorites={favorites} toggleFavorite={toggleFavorite}/>}/>
               <Route path="/high-score" element={<HighScore highScore={highScore} getHighScore={getHighScore} />}/>

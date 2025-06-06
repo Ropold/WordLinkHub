@@ -48,12 +48,13 @@ export default function HighScore(props: Readonly<HighScoreProps>) {
     }
 
     useEffect(() => {
-        fetchGithubUsernames(props.highScore);
+            fetchGithubUsernames(props.highScore);
     }, [props.highScore]);
+
 
     useEffect(() => {
         props.getHighScore();
-    }, [props.getHighScore]);
+    }, []);
 
     return (
         <div className="high-score-table margin-top-20">

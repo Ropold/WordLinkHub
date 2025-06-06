@@ -77,12 +77,12 @@
     color: #999;
 }
 
-#active-button-my-animals,
+#check-button,
 #active-button-my-questions {
     background-color: #66bb6a;
 }
 
-#active-button-my-animals:hover,
+#check-button:hover,
 #active-button-my-questions:hover {
     background-color: #388e3c;
 }
@@ -163,4 +163,8 @@
 
 .margin-top-20 {
     margin-top: 20px;
+}
+
+.margin-bottom-20 {
+     margin-bottom: 20px;
 }
