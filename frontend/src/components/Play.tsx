@@ -119,6 +119,7 @@ export default function Play(props: Readonly<PlayProps>) {
     }
 
     function checkForHighScore() {
+        props.getHighScore();
         const highScores = props.highScore;
 
         if (highScores.length < 10) {
@@ -218,7 +219,7 @@ export default function Play(props: Readonly<PlayProps>) {
                 <div className="space-between">
                     <p>Question Index {currentQuestionIndex + 1}/10</p>
                     <p>Mistakes {wrongAnswerCount}/10</p>
-                    <p>⏱️ Time: {time.toFixed(1)} sec</p>
+                    {/*<p>⏱️ Time: {time.toFixed(1)} sec</p>*/}
                     <div>
                         <img
                             src={
@@ -239,7 +240,6 @@ export default function Play(props: Readonly<PlayProps>) {
                     className="high-score-input"
                     onSubmit={(e) => {
                         e.preventDefault(); // Verhindert das Neuladen der Seite
-                        console.log("Form submitted!");
                         handleSaveHighScore();
                     }}
                 >
