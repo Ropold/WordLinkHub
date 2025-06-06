@@ -40,7 +40,6 @@ export default function Play(props: Readonly<PlayProps>) {
     const inputRef = useRef<HTMLInputElement>(null);
     const startButtonRef = useRef<HTMLButtonElement>(null);
 
-
     useEffect(() => {
         if (!showPreviewMode && !gameFinished) {
             setTime(0);
@@ -112,9 +111,6 @@ export default function Play(props: Readonly<PlayProps>) {
             .then(() => {
                 setShowNameInput(false);
                 setIsNewHighScore(false);
-                if (startButtonRef.current) {
-                    startButtonRef.current.focus();
-                }
             })
             .catch((error) => {
                 console.error("Error saving high score:", error);
@@ -149,14 +145,6 @@ export default function Play(props: Readonly<PlayProps>) {
             inputRef.current.focus();
         }
     }, [isNewHighScore, showNameInput]);
-
-    useEffect(() => {
-        if (gameFinished && !isNewHighScore) {
-            if (startButtonRef.current) {
-                startButtonRef.current.focus();
-            }
-        }
-    }, [gameFinished, isNewHighScore]);
 
 
     useEffect(() => {
@@ -253,6 +241,7 @@ export default function Play(props: Readonly<PlayProps>) {
                     className="high-score-input"
                     onSubmit={(e) => {
                         e.preventDefault(); // Verhindert das Neuladen der Seite
+                        console.log("Form submitted!");
                         handleSaveHighScore();
                     }}
                 >
@@ -267,6 +256,12 @@ export default function Play(props: Readonly<PlayProps>) {
                         value={playerName}
                         onChange={(e) => setPlayerName(e.target.value)}
                         placeholder="Enter your name"
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleSaveHighScore();
+                            }
+                        }}
                     />
                     <button
                         className="button-group-button"
