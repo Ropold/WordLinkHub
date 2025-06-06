@@ -2,7 +2,7 @@ import type { QuestionModel } from "./model/QuestionModel.ts";
 import type { HighScoreModel } from "./model/HighScoreModel.ts";
 import Preview from "./Preview.tsx";
 import Game from "./Game.tsx";
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import { ALL_CATEGORIES, type CategoryEnum } from "./model/CategoryEnum.ts";
 import { categoryEnumImages } from "./utils/CategoryEnumImages.ts";
 import headerLogo from "../assets/logo-word-link.jpg";
@@ -36,6 +36,10 @@ export default function Play(props: Readonly<PlayProps>) {
     const [showNameInput, setShowNameInput] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState("");
+
+    const inputRef = useRef<HTMLInputElement>(null);
+    const startButtonRef = useRef<HTMLButtonElement>(null);
+
 
     useEffect(() => {
         if (!showPreviewMode && !gameFinished) {
@@ -107,6 +111,10 @@ export default function Play(props: Readonly<PlayProps>) {
         axios.post("/api/high-score", highScoreData)
             .then(() => {
                 setShowNameInput(false);
+                setIsNewHighScore(false);
+                if (startButtonRef.current) {
+                    startButtonRef.current.focus();
+                }
             })
             .catch((error) => {
                 console.error("Error saving high score:", error);
@@ -136,6 +144,19 @@ export default function Play(props: Readonly<PlayProps>) {
         }
     }
 
+    useEffect(() => {
+        if (isNewHighScore && showNameInput && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [isNewHighScore, showNameInput]);
+
+    useEffect(() => {
+        if (gameFinished && !isNewHighScore) {
+            if (startButtonRef.current) {
+                startButtonRef.current.focus();
+            }
+        }
+    }, [gameFinished, isNewHighScore]);
 
 
     useEffect(() => {
@@ -187,6 +208,7 @@ export default function Play(props: Readonly<PlayProps>) {
         <>
             <div className="space-between">
                 <button
+                    ref={startButtonRef}
                     className="button-group-button"
                     id={gameFinished ? "start-button" : undefined}
                     onClick={handleStartGame}
@@ -238,6 +260,7 @@ export default function Play(props: Readonly<PlayProps>) {
                         Congratulations! You secured a spot on the high score list. Enter your name:
                     </label>
                     <input
+                        ref={inputRef}
                         className="playerName"
                         type="text"
                         id="playerName"
