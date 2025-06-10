@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/word-link-hub/no-login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/word-link-hub/batch-no-login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/word-link-hub/bulk").permitAll()
                         .requestMatchers(HttpMethod.GET, QUESTION).permitAll()
                         .requestMatchers(HttpMethod.POST, QUESTION).authenticated()
                         .requestMatchers(HttpMethod.PUT, QUESTION).authenticated()

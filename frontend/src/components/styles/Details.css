@@ -1,5 +1,6 @@
 .details-container {
     padding: 1rem;
+    max-width: 800px;
 }
 
 .details-image {
