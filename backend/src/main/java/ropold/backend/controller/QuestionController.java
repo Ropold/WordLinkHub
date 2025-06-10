@@ -93,6 +93,28 @@ public class QuestionController {
         );
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/bulk")
+    public List<QuestionModel> addQuestionsWithNoLogin(
+            @RequestBody List<QuestionModelDto> questionModelDtos) {
+
+        return questionModelDtos.stream()
+                .map(dto -> questionService.addQuestion(
+                        new QuestionModel(
+                                null,
+                                dto.title(),
+                                dto.categoryEnum(),
+                                dto.clueWords(),
+                                dto.solutionWord(),
+                                dto.answerExplanation(),
+                                dto.isActive(),
+                                dto.githubId(),
+                                null
+                        )
+                ))
+                .toList();
+    }
+
     @PutMapping("/{id}")
     public QuestionModel updateQuestion(
             @PathVariable String id,

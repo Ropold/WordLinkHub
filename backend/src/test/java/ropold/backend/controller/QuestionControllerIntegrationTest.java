@@ -370,4 +370,55 @@ class QuestionControllerIntegrationTest {
         Assertions.assertEquals("https://example.com/egypt.jpg", updated.imageUrl());
     }
 
+    @Test
+    void postBulkQuestionsWithoutLogin_shouldReturnCreatedQuestions() throws Exception {
+        questionRepository.deleteAll();
+
+        String json = """
+            [
+                {
+                    "title": "Land der aufgehenden Sonne",
+                    "categoryEnum": "GEOGRAPHY",
+                    "clueWords": ["Sushi", "Kimono", "Samurai", "Fuji"],
+                    "solutionWord": "Japan",
+                    "answerExplanation": "Alle Hinweise deuten auf Japan – das Land der aufgehenden Sonne.",
+                    "isActive": true,
+                    "githubId": "user"
+                },
+                {
+                    "title": "Berühmter Detektiv",
+                    "categoryEnum": "FICTIONAL_CHARACTERS",
+                    "clueWords": ["London", "Pfeife", "Watson", "Deduktion"],
+                    "solutionWord": "Sherlock Holmes",
+                    "answerExplanation": "Die Begriffe beschreiben Sherlock Holmes, den berühmten Detektiv.",
+                    "isActive": true,
+                    "githubId": "user"
+                }
+            ]
+            """;
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/word-link-hub/bulk")
+                        .contentType("application/json")
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].title", is("Land der aufgehenden Sonne")))
+                .andExpect(jsonPath("$[1].solutionWord", is("Sherlock Holmes")));
+
+        List<QuestionModel> allQuestions = questionRepository.findAll();
+        Assertions.assertEquals(2, allQuestions.size());
+
+        QuestionModel q1 = allQuestions.stream()
+                .filter(q -> q.title().equals("Land der aufgehenden Sonne"))
+                .findFirst().orElseThrow();
+
+        QuestionModel q2 = allQuestions.stream()
+                .filter(q -> q.title().equals("Berühmter Detektiv"))
+                .findFirst().orElseThrow();
+
+        org.assertj.core.api.Assertions.assertThat(q1.githubId()).isEqualTo("user");
+        org.assertj.core.api.Assertions.assertThat(q2.githubId()).isEqualTo("user");
+    }
+
+
 }
